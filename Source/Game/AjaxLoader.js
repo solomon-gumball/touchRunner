@@ -1,4 +1,4 @@
-var ASSET_TYPE = 'text';
+var ASSET_TYPE = 'data';
 
 var EventHandler       = require('../Events/EventHandler');
 

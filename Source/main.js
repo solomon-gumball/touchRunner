@@ -4,7 +4,9 @@ var Menu    = require('./States/Menu');
 var Playing = require('./States/Playing');
 var EventHandler = require('./Events/EventHandler');
 var ImageLoader  = require('./Game/ImageLoader');
+var AjaxLoader   = require('./Game/AjaxLoader');
 var Viewport     = require('./Game/Viewport');
+
 
 var Controller = new EventHandler();
 
@@ -19,14 +21,27 @@ Loading.pipe(Controller);
 Controller.on('doneLoading', goToMenu);
 Controller.on('newGame', startGame);
 
-var spritesheet = {
-	type: 'image',
-	source: '../Assets/crate.gif',
-	data: {}
-};
+var assets = [
+	{
+		type: 'image',
+		source: '../Assets/crate.gif',
+		data: {}
+	},
+	{
+		type: 'data',
+		source: '../Shaders/FragmentShader.glsl',
+		data: {}
+	},
+	{
+		type: 'data',
+		source: '../Shaders/VertexShader.glsl',
+		data: {}
+	}
+]
 
 Loading.register(ImageLoader);
-Loading.load(spritesheet);
+Loading.register(AjaxLoader);
+Loading.load(assets);
 
 Engine.setState(Loading);
 
