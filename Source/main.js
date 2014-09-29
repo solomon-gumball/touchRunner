@@ -28,6 +28,26 @@ var assets = [
 		data: {}
 	},
 	{
+		type: 'image',
+		source: '../Assets/spaceship.png',
+		data: {}
+	},
+	{
+		type: 'image',
+		source: '../Assets/space1.jpg',
+		data: {}
+	},
+	{
+		type: 'image',
+		source: '../Assets/enemySprites.png',
+		data: {}
+	},
+	{
+		type: 'image',
+		source: '../Assets/Character.png',
+		data: {}
+	},
+	{
 		type: 'data',
 		source: '../Shaders/FragmentShader.glsl',
 		data: {}

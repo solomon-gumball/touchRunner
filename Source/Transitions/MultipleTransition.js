@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Utility = require('famous/utilities/Utility');
+var Utility = require('./Utility');
 
 /**
  * Transition meta-method to support transitioning multiple

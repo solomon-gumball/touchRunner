@@ -11,6 +11,7 @@
 
 var MultipleTransition = require('./MultipleTransition');
 var TweenTransition = require('./TweenTransition');
+var Easing = require('./Easing');
 
 /**
  * A state maintainer for a smooth transition between

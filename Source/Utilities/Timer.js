@@ -9,7 +9,7 @@ module.exports = {
 		var newElapsedTime = currentTime - this._initialTime;
 
 		if(!this._initialTime) this._initialTime = currentTime;
-		// console.log(newElapsedTime)
+		
 		this._frameDuration = newElapsedTime - this._elapsed;
 		this._elapsed = currentTime - this._initialTime;
 

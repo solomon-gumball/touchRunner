@@ -1,29 +1,53 @@
-var Timer = require('../../Utilities/Timer');
-var RotateSync = require('../../Inputs/RotateSync');
+var Transitionable = require('../../Transitions/Transitionable');
 
-function WorldSprite (options) {
-	this.gl = options.gl;
+function CharacterSprite (options) {
+	this.gl            = options.gl;
 	this.shaderProgram = options.shaderProgram;
-	this.texture = options.texture;
+	this.texture       = options.texture;
 
-	this.rotation = 0;
-	this.matrix = mat4.create();
-	this.position = [0, 0, -2];
-	this.spriteCoord = options.spriteCoord;
-	this.translateScale = 0.05;
+	this.matrix      = mat4.create();
+	this.position    = new Transitionable([0.0, 0.0, -1.5]);
+	this.spriteCoord = [0.0, 0.0];
+	this.spriteRot   = 0;
+	this.rotation    = new Transitionable(0);
+	this.settleRate  = 0.1;
 
 	initBuffers.call(this);
 }
 
-WorldSprite.prototype.update = function update() {
+CharacterSprite.OPTIONS = {
+	spinOutAnimation: {duration: 1000}
 }
-	
-WorldSprite.prototype.render = function render() {
+
+CharacterSprite.prototype.update = function update() {
+
+}
+
+CharacterSprite.prototype.updateRot = function updateRot(theta) {
+	this.rotation.halt();
+	this.rotation.set(-theta.angle % Math.PI);
+	// console.log(theta.angle)
+	// this.rotation.set(0, {duration: 100});
+}
+
+CharacterSprite.prototype.handleCollision = function handleCollision() {
+	this.rotation.halt();
+	this.position.halt();
+	this.position.set([0.0, 1.0, -1.5], {duration: 1400});
+	this.rotation.set(Math.PI * 10, {duration: 1400});
+}
+
+CharacterSprite.prototype.settle = function settle() {
+	this.rotation.set(0, {duration: 1000, curve: 'outQuart'});
+}
+
+CharacterSprite.prototype.render = function render() {
 	mat4.identity(this.matrix);
-    mat4.translate(this.matrix, [this.position[0], this.position[1], this.position[2]]);
+    mat4.translate(this.matrix, this.position.get());
+    mat4.rotate(this.matrix, -this.rotation.get(), [0, 0.0, 0.4]);
 
     /* SCALED TO WINDOW */
-    this.gl.uniform1i(this.shaderProgram.drawState, 0);
+    this.gl.uniform1i(this.shaderProgram.drawState, 1);
 
     /* SET TEXTURE */
     this.gl.activeTexture(this.gl.TEXTURE0);
@@ -40,24 +64,22 @@ WorldSprite.prototype.render = function render() {
 
     /* SET UNIFORMS */
     this.gl.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, this.matrix);
-    this.gl.uniform2f(this.shaderProgram.spriteCoord, this.spriteCoord[0] * this.translateScale, this.spriteCoord[1] * this.translateScale);
+    this.gl.uniform2f(this.shaderProgram.spriteCoord, this.spriteCoord[0], this.spriteCoord[1]);
     this.gl.uniform1f(this.shaderProgram.resolution, innerHeight / innerWidth);
-    this.gl.uniform1f(this.shaderProgram.spriteRot, this.rotation);
+    this.gl.uniform1f(this.shaderProgram.spriteRot, 0);
 
     /* DRAW */
     this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, this.positionBuffer.numItems);
 }
 
 function initBuffers() {
-	var aspectRatio = innerHeight / innerWidth;
-
 	this.positionBuffer = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
 	this.positionVertices = [
-		-2.5,  2.5 * aspectRatio, 0.0,
-		 2.5,  2.5 * aspectRatio, 0.0,
-		-2.5, -2.5 * aspectRatio, 0.0,
-		 2.5, -2.5 * aspectRatio, 0.0
+		-0.1,  0.10, 0.0,
+		 0.1,  0.10, 0.0,
+		-0.1, -0.10, 0.0,
+		 0.1, -0.10, 0.0
 	];
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.positionVertices), this.gl.STATIC_DRAW);
     this.positionBuffer.itemSize = 3;
@@ -67,13 +89,13 @@ function initBuffers() {
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.textureBuffer);
 	this.textureVertices = [
 		0.0, 0.0,
-		1.0, 0.0,
-		0.0, 1.0 * aspectRatio,
-		1.0, 1.0 * aspectRatio
+		0.19, 0.0,
+		0.0, 0.25,
+		0.19, 0.25
 	];
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.textureVertices), this.gl.STATIC_DRAW);
     this.textureBuffer.itemSize = 2;
     this.textureBuffer.numItems = 4;
 }
 
-module.exports = WorldSprite;
+module.exports = CharacterSprite;

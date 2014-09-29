@@ -20,11 +20,14 @@ Playing.initialize = function initialize()
 	this.canvas.width = innerWidth;
 	this.canvas.height = innerHeight;
 	KeyHandler.init();
-	TouchHandler.init();
+	// TouchHandler.init();
 	this.renderer = new Renderer({
 		canvas: this.canvas,
 		textures: [
-			'../Assets/crate.gif'
+			'../Assets/space1.jpg',
+			'../Assets/spaceship.png',
+			'../Assets/enemySprites.png'
+			// '../Assets/crate.gif'
 		]
 	});
 };
